@@ -1,9 +1,9 @@
 <?php
 
-require_once 'controllers/taskController.php';
-require_once 'database/MySQLDatabase.php';
-require_once 'config/config.php';
-require_once 'views/taskView.php';
+require_once 'app/controllers/taskController.php';
+require_once 'app/database/MySQLDatabase.php';
+require_once 'app/config/config.php';
+require_once 'app/views/taskView.php';
 
 $database = new MySQLDatabase(DB_HOST, DB_NAME, DB_USER, DB_PASS, DB_PORT);
 $taskModel = new TaskModel($database);
@@ -38,6 +38,6 @@ if ($requestUri[0] === 'tasks') {
     }
 }
 else {
-    echo json_encode(["success" => false, "message" => "Error: ruta no encontrada"]);
+    echo json_encode(["success" => false, "message" => "Error: path not found"]);
 }
 ?>

@@ -18,22 +18,31 @@ class MySQLDatabase implements DatabaseInterface {
             PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
             PDO::ATTR_EMULATE_PREPARES => false,
         ];
+    }
 
+    public function connect() {
         try {
             $this->connection = new PDO($this->dsn, $this->user, $this->password, $this->options);
         } catch (PDOException $e) {
-            throw new Exception("Error de conexion a base de datos: " . $e->getMessage());
+            throw new Exception("DB connection error: $e->getMessage()");
         }
-        return $this->connection;
     }
-
+    
+    public function disconnect() {
+        $this->connection = NULL;
+    }
 
     public function query($sql, $params = []) {
         if (!$this->connection) {
-            throw new Exception("No hay conexion a la base de datos.");
+            throw new Exception("DB connection error");
         }
-        $stmt = $this->connection->prepare($sql);
-        $stmt->execute($params);
+        try {
+            $stmt = $this->connection->prepare($sql);
+            $stmt->execute($params);
+        } catch (PDOException $e) {
+            throw new Exception("DB connection error: $e->getMessage()");
+        }
+        
         return $stmt;
     }
 

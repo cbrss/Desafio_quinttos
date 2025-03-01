@@ -1,4 +1,5 @@
 <?php
+
 class TaskView {
     public function render($tasks) {
         ?>
@@ -8,7 +9,7 @@ class TaskView {
             <meta charset="UTF-8">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
             <title>Lista de Tareas</title>
-            <link rel="stylesheet" href="views/css/taskStyle.css">
+            <link rel="stylesheet" href="app/views/css/taskStyle.css">
             <script src="https://kit.fontawesome.com/a83aa45581.js" crossorigin="anonymous"></script>
         </head>
         <body>
@@ -34,22 +35,22 @@ class TaskView {
                 <?php if (isset($tasks) && count($tasks)> 0) {?>
                     <div class="task-section">
                         <h3>Tareas Pendientes</h3>
-                        <ul id="lista">
+                        <ul>
                             <?php foreach ($tasks as $task): ?>
                                 <li>
-                                    <i class="far fa-circle co completed-button" data-id="<?= $task['id'] ?>"></i>
-                                    <button class="text show-button <?= $task['status'] == 'completed' ? 'line-through' : '' ?>" 
-                                        data-id="<?= $task['id'] ?>">
-                                        <?= htmlspecialchars($task['title']) ?>
+                                    <i class="<?= $task->status == 'completed' ? 'fas fa-check-circle' : 'far fa-circle' ?> co completed-button" data-id="<?= $task->id ?>"></i>
+                                    <button class="text show-button <?= $task->status == 'completed' ? 'line-through' : '' ?>" 
+                                        data-id="<?= $task->id ?>">
+                                        <?= htmlspecialchars($task->title) ?>
                                     </button>                                
-                                    <i class="fas fa-trash de del-button" data-id="<?= $task['id'] ?>"></i>
+                                    <i class="fas fa-trash de del-button" data-id="<?= $task->id ?>"></i>
                                 </li>
                             <?php endforeach; ?>
                         </ul>
                     </div>
                 <?php } ?>
             </div>
-            <script src="views/scripts/taskScript.js"></script>
+            <script src="app/views/scripts/taskScript.js"></script>
         </body>
         </html>
         <?php

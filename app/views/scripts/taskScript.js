@@ -4,11 +4,11 @@ document.addEventListener("DOMContentLoaded", () => {
         let description = document.querySelector("#input-description");
 
         if (title.value.trim() === "") {
-            alert("Error: La tarea no puede estar vacía");
+            alert("Error: La tarea no puede estar vacia");
             return;
         }
         if (description.value.trim() === "") {
-            alert("Error: La tarea no puede estar vacía");
+            alert("Error: La descripcion no puede estar vacia");
             return;
         }
         fetch("tasks", {
