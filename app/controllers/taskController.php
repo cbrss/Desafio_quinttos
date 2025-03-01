@@ -96,7 +96,7 @@ class TaskController {
         
         $task = $this->taskModel->find($id);
         if (!$task) {
-            echo json_encode(ResponseHttp::status404("Task doesn't exist"));
+            echo json_encode(ResponseHttp::status500("Task doesn't exist"));
         }
         if (empty($data['title'])) {
             $data['title'] = $task->title;
@@ -120,7 +120,7 @@ class TaskController {
         try {
             $task = $this->taskModel->find($id);
             if (!$task) {
-                echo json_encode(ResponseHttp::status404("Task doesn't exist"));
+                echo json_encode(ResponseHttp::status500("Task doesn't exist"));
             }
 
             $this->taskModel->delete($id);

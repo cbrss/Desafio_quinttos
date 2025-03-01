@@ -16,10 +16,6 @@ class ResponseHttp {
         return ["success" => false, "message" => $message];
     }
 
-    public static function status404($message = 'Not found') {
-        http_response_code(404);
-        return ["success" => false, "message" => $message];
-    }
 
     public static function status500($message = 'Internal server error') {
         http_response_code(500);

@@ -25,7 +25,7 @@ class TaskView {
                 <div class="add-task">
                     <div class="add-task-title">
                         <input type="text" id="input-title" placeholder="Titulo">
-                        <i class="fas fa-plus-circle" id="add-button"></i>
+                        <i class="fas fa-plus-circle add-button" ></i>
                     </div>
                     <input type="text" id="input-description" placeholder="Descripcion">
 

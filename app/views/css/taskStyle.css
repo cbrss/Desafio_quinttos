@@ -118,8 +118,12 @@ body {
     font-family: inherit; 
     cursor: pointer; 
     padding: 0;     
-    text-align: left;
-    display: inline;
+    text-align: center;
+}
+
+.disabled {
+    pointer-events: none;
+    opacity: 0.5;
 }
 
  /* MODAL SECTION*/
