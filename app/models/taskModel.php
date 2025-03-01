@@ -22,7 +22,6 @@ class TaskModel {
         } catch (Exception $e) {
             throw new Exception("Error fetching tasks: " . $e->getMessage());
         }
-        
     }
 
     public function find($id) {

@@ -56,9 +56,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 .then(response => response.json())
                 .then(data => {
                         let task = data.task;
-
                         task.status = task.status == "in_progress" ? "completed" : "in_progress";
-                        
                         fetch("tasks/" + id, {
                             method: "PUT",
                             headers: { "Content-Type": "application/json" },

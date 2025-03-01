@@ -33,70 +33,69 @@ class TaskController {
     }
 
     public function findAll() {
-        header('Content-Type: application/json');
+        
         try {
             $tasks = $this->taskModel->findAll();
-            $response = ResponseHttp::status200("Tasks retrieved");
-            $response["tasks"] = $tasks;
-            
-            echo json_encode($response, JSON_UNESCAPED_UNICODE);
+            ResponseHttp::status200("Tasks retrieved", ["tasks" => $tasks]);
         } catch (Exception $e) {
-            echo json_encode(ResponseHttp::status500("Db error: " . $e->getMessage()));
+            ResponseHttp::status500("Db error: " . $e->getMessage());
             return;
         }
         return;
     }
 
     public function find($id) {
-        header('Content-Type: application/json');
-        $task = "";
+        
         try {
             $task = $this->taskModel->find($id);
             if ($task) {
-                $response = ResponseHttp::status200("Task found");
-                $response["task"] = $task;
-                echo json_encode($response, JSON_UNESCAPED_UNICODE);
+                ResponseHttp::status200("Task found", ["tasks" => $task]);
             } else {
-                echo json_encode(ResponseHttp::status500("Task aadoesn't exist"));
+                ResponseHttp::status404("Task doesn't exist");
             }
         } catch (Exception $e) {
-            echo json_encode(ResponseHttp::status500("Db error: " . $e->getMessage()));
+            ResponseHttp::status500("Database error: " . $e->getMessage());
             return;
         }
         return;
     }
 
     public function save() {
-        header('Content-Type: application/json');
+        
         $data = json_decode(file_get_contents("php://input"), true);
 
         if (empty($data['title']) || empty($data['description'])) {
-            echo json_encode(ResponseHttp::status400("Missing fields"));
+            ResponseHttp::status400("Missing fields");
         } else if(!preg_match(self::$validateTaskTitle, $data['title'])) {
-            echo json_encode(ResponseHttp::status400("Invalid title, must be 1-255 characters long & contain only numbers and letters"));
+            ResponseHttp::status400("Invalid title, must be 1-255 characters long & contain only numbers and letters");
         } else if (!preg_match(self::$validateTaskDescription, $data['description'])) {
-            echo json_encode(ResponseHttp::status400("Invalid description, must be 1-255 characters long"));
+            ResponseHttp::status400("Invalid description, must be 1-255 characters long");
         } else {
             try{
                 $this->taskModel->save($data['title'], $data['description']);
             } catch (Exception $e) {
-                echo json_encode(ResponseHttp::status500("Dba error: " . $e->getMessage()));
+                ResponseHttp::status500("Database error: " . $e->getMessage());
                 return;
             }
 
-            echo json_encode(ResponseHttp::status201("Task created"));
+            ResponseHttp::status201("Task created");
         }
 
         return;
     }
 
     public function edit($id) {
-        header('Content-Type: application/json');
-        $data = json_decode(file_get_contents("php://input"), true);
         
-        $task = $this->taskModel->find($id);
+        $data = json_decode(file_get_contents("php://input"), true);
+        $task = NULL;
+        try{
+            $task = $this->taskModel->find($id);
+        } catch (Exception $e) {
+            ResponseHttp::status500("Database error: " . $e->getMessage());
+            return;
+        }
         if (!$task) {
-            echo json_encode(ResponseHttp::status500("Task doesn't exist"));
+            ResponseHttp::status404("Task doesn't exist");
         }
         if (empty($data['title'])) {
             $data['title'] = $task->title;
@@ -107,28 +106,28 @@ class TaskController {
         try{
             $this->taskModel->update($id, $data['status']);
         } catch (Exception $e) {
-            echo json_encode(ResponseHttp::status500("Db error: " . $e->getMessage()));
+            ResponseHttp::status500("Database error: " . $e->getMessage());
             return;
         }
-        echo json_encode(ResponseHttp::status200("Task updated"));
+        ResponseHttp::status200("Task updated");
         return;
     }
 
     public function delete($id) {
-        header('Content-Type: application/json');
+        
 
         try {
             $task = $this->taskModel->find($id);
             if (!$task) {
-                echo json_encode(ResponseHttp::status500("Task doesn't exist"));
+                ResponseHttp::status404("Task doesn't exist");
             }
 
             $this->taskModel->delete($id);
         } catch (Exception $e) {
-            echo json_encode(ResponseHttp::status500("Db error: " . $e->getMessage() ));
+            ResponseHttp::status500("Database error: " . $e->getMessage());
             return;
         }
-        echo json_encode(ResponseHttp::status200("Task deleted"));
+        ResponseHttp::status200("Task deleted");
         return;
     }
 }
