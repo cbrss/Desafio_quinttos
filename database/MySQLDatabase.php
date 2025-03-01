@@ -18,9 +18,7 @@ class MySQLDatabase implements DatabaseInterface {
             PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
             PDO::ATTR_EMULATE_PREPARES => false,
         ];
-    }
 
-    public function connect() {
         try {
             $this->connection = new PDO($this->dsn, $this->user, $this->password, $this->options);
         } catch (PDOException $e) {
@@ -28,6 +26,7 @@ class MySQLDatabase implements DatabaseInterface {
         }
         return $this->connection;
     }
+
 
     public function query($sql, $params = []) {
         if (!$this->connection) {

@@ -1,0 +1,156 @@
+* {
+	box-sizing: border-box;
+	margin: 0;
+	padding: 0;
+}
+
+:root {
+	--white: #fafafb;
+	--purple: #9a67ea;
+	--blue-light: #04d4c3;
+	--blue-dark: #2a73c2;
+	--green: #2c7b90;
+	--red: #d80e0e;
+	--gray: #fff;
+	--black-light: rgba(0, 0, 0, 0.4);
+}
+
+body {
+	background: linear-gradient(to bottom, var(--purple), var(--blue-light));
+	height: 100vh;
+	font-family: "Prompt", sans-serif;
+}
+
+.container {
+	max-width: 80%;
+	width: 400px;
+	height: 600px;
+	margin: 0 auto;
+	padding-top: 100px;
+	color: var(--white);
+}
+
+/* ADD TASK */
+.add-task {
+    background-color: var(--white);
+    border-radius: 15px;
+    padding: 15px;
+    display: flex;
+    flex-direction: column; 
+    gap: 10px; 
+    margin: 20px 0;
+}
+
+.add-task-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.add-task input {
+    width: 100%;
+    height: 40px;
+    border-radius: 8px;
+    border: none;
+    padding-left: 10px;
+    font-size: 1rem;
+}
+
+/* ADD TASK ICON */
+.add-task i {
+	font-size: 50px;
+	color: var(--purple);
+}
+
+.add-task i:hover {
+	transform: scale(1.1);
+	cursor: pointer;
+}
+
+.add-task input::placeholder {
+	font-size: 1.1rem;
+	color: var(--purple);
+}
+#task-error {
+	color: var(--red);
+	display: "none";
+	margin-bottom: 10px;
+}
+
+/* TASK SECTION*/
+
+.task-section h3 {
+	color: var(--white);
+	margin-bottom: 20px;
+}
+.task-section li {
+	display: flex;
+	background: linear-gradient(to bottom, var(--blue-dark), var(--green));
+	border-radius: 15px;
+	padding: 10px;
+	align-items: center;
+	justify-content: space-between;
+	margin: 5px 0;
+	color: var(--white);
+}
+
+.task-section i {
+	font-size: 25px;
+}
+.task-section i:hover {
+	color: var(--blue-light);
+	cursor: pointer;
+}
+.task-section > ul p {
+	font-size: 1.2rem;
+}
+
+.line-through {
+	text-decoration: line-through;
+	color: var(--blue-light);
+}
+
+.show-button {
+    background: none;
+    border: none;
+    color: inherit;
+    font-size: inherit;
+    font-family: inherit; 
+    cursor: pointer; 
+    padding: 0;     
+    text-align: left;
+    display: inline;
+}
+
+ /* MODAL SECTION*/
+
+.modal {
+    display: none;
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    background-color:var(--black-light);
+}
+
+.modal-content {
+    background-color: var(--gray);
+    margin: 15% auto;
+    padding: 20px;
+    border-radius: 10px;
+    width: 30%;
+    text-align: center;
+    overflow-wrap: break-word;
+}
+
+.modal-title {
+	color:var(--purple);
+	padding-bottom: 10px;
+}
+
+.modal-text {
+	margin-top: 10px;
+}
+
+
+
+

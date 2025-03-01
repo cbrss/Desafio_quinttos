@@ -1,6 +1,5 @@
 <?php
     interface DatabaseInterface  {
-        public function connect();
-        public function query($sql, $params); 
+        function query($sql, $params); 
     }
 ?>
