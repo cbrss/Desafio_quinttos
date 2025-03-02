@@ -40,7 +40,7 @@ class MySQLDatabase implements DatabaseInterface {
             $stmt = $this->connection->prepare($sql);
             $stmt->execute($params);
         } catch (PDOException $e) {
-            throw new Exception("DB connection error: $e->getMessage()");
+            throw new Exception("DB connection error: " . $e->getMessage());
         }
         
         return $stmt;

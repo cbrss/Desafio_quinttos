@@ -71,11 +71,6 @@ body {
 	font-size: 1.1rem;
 	color: var(--purple);
 }
-#task-error {
-	color: var(--red);
-	display: "none";
-	margin-bottom: 10px;
-}
 
 /* TASK SECTION*/
 

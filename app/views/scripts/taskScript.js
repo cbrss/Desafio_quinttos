@@ -11,15 +11,19 @@ document.addEventListener("DOMContentLoaded", () => {
         button.addEventListener("click", () => {
             let title = document.querySelector("#input-title");
             let description = document.querySelector("#input-description");
+
+            const validateTaskTitle = /^[a-zA-Z0-9]{1,255}$/; 
+            const validateTaskDescription = /^.{1,255}$/s;
             
-            if (title.value.trim() === "") {
-                alert("Error: La tarea no puede estar vacia");
+            if (!validateTaskTitle.test(title.value)) {
+                alert("Error: El titulo debe tener entre 1 y 255 caracteres y solo puede contener letras y numeros");
                 return;
             }
-            if (description.value.trim() === "") {
-                alert("Error: La descripcion no puede estar vacia");
+            if (!validateTaskDescription.test(description.value)) {
+                alert("Error: La descripcion debe tener entre 1 y 255 caracteres");
                 return;
             }
+
             disableButtons();
             fetch("tasks", {
                 method: "POST",
@@ -27,6 +31,8 @@ document.addEventListener("DOMContentLoaded", () => {
                 body: JSON.stringify({ title: title.value, description: description.value })
                 })
                 .then(() => location.reload())
+                .catch(error => console.error("Fetch error:", error));
+
         })
     });
 
@@ -44,7 +50,9 @@ document.addEventListener("DOMContentLoaded", () => {
                     descripcionText.innerText = task.description;
                     modal.style.display = "block";
                 })
-                .finally(() => enableButtons());
+                .catch(error => console.error("Fetch error:", error))
+                .finally(() => enableButtons())
+
         });
     });
 
@@ -61,8 +69,13 @@ document.addEventListener("DOMContentLoaded", () => {
                             method: "PUT",
                             headers: { "Content-Type": "application/json" },
                             body: JSON.stringify(task)
-                        }).then(() => location.reload());
+                        })
+                        .then(() => location.reload())
+                        .catch(error => console.error("Fetch error:", error));
+
                     })
+                .catch(error => console.error("Fetch error:", error));
+
         });
     });
 
@@ -72,7 +85,10 @@ document.addEventListener("DOMContentLoaded", () => {
             disableButtons();
             fetch("tasks/" + id, { method: "DELETE" })
                 .then(() => location.reload())
-            });
+                .catch(error => console.error("Fetch error:", error));
+            })
+            
+
     });
 
     function disableButtons() {

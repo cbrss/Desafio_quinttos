@@ -1,5 +1,6 @@
 <?php
 
+
 require_once 'app/models/taskModel.php';
 require_once 'app/views/taskView.php';
 require_once 'app/utils/ResponseHttp.php';
@@ -16,36 +17,47 @@ class TaskController {
         $this->taskView = $taskView;
     }
 
-    public function index() {
-        try{
-            $tasks = $this->taskModel->findAll();
+    public function list() {
+        session_start(); 
+
+        if (!isset($_SESSION['userId'])) {
+            ResponseHttp::status401("Unauthorized: You must log in");
+            return;
+        }
+        $sessionUserId = $_SESSION['userId'];
+        $urlUserId = isset($_GET['userId']) ? intval($_GET['userId']) : null;
+        if ($urlUserId !== $sessionUserId) {
+            ResponseHttp::status403("Forbidden: You do not have permission to access this resource");
+            return;
+        }
+
+        try {
+            $userId = $_SESSION['userId']; 
+            $userName = $_SESSION['username'];
+
+            $tasks = $this->taskModel->findAllByUser($userId);
+    
             $tasks = array_filter($tasks, function($task) {
                 return $task->status != 'deleted';
             });
-            
-            $this->taskView->render($tasks);
+    
+            $this->taskView->renderList($tasks, $userName);
         } catch (Exception $e) {
-            echo "error" . $e->getMessage();
-            return;
+            ResponseHttp::status500("Error: " . $e->getMessage());
         }
-        #$this->taskView->renderError();
-        return;
     }
 
     public function findAll() {
-        
         try {
             $tasks = $this->taskModel->findAll();
             ResponseHttp::status200("Tasks retrieved", ["tasks" => $tasks]);
         } catch (Exception $e) {
-            ResponseHttp::status500("Db error: " . $e->getMessage());
-            return;
+            ResponseHttp::status500("Database error: " . $e->getMessage());
         }
         return;
     }
 
     public function find($id) {
-        
         try {
             $task = $this->taskModel->find($id);
             if ($task) {
@@ -55,14 +67,18 @@ class TaskController {
             }
         } catch (Exception $e) {
             ResponseHttp::status500("Database error: " . $e->getMessage());
-            return;
         }
         return;
     }
 
-    public function save() {
-        
+    public function save() { 
         $data = json_decode(file_get_contents("php://input"), true);
+        session_start();
+
+        if (!isset($_SESSION['userId'])) {
+            ResponseHttp::status401("Unauthorized: You must log in");
+            return;
+        }
 
         if (empty($data['title']) || empty($data['description'])) {
             ResponseHttp::status400("Missing fields");
@@ -72,20 +88,19 @@ class TaskController {
             ResponseHttp::status400("Invalid description, must be 1-255 characters long");
         } else {
             try{
-                $this->taskModel->save($data['title'], $data['description']);
+                $userId = $_SESSION['userId'];
+                $this->taskModel->save($data['title'], $data['description'], $userId);
+                ResponseHttp::status201("Task created");
             } catch (Exception $e) {
                 ResponseHttp::status500("Database error: " . $e->getMessage());
-                return;
             }
 
-            ResponseHttp::status201("Task created");
         }
 
         return;
     }
 
     public function edit($id) {
-        
         $data = json_decode(file_get_contents("php://input"), true);
         $task = NULL;
         try{
@@ -105,17 +120,14 @@ class TaskController {
         }
         try{
             $this->taskModel->update($id, $data['status']);
+            ResponseHttp::status200("Task updated");
         } catch (Exception $e) {
             ResponseHttp::status500("Database error: " . $e->getMessage());
-            return;
         }
-        ResponseHttp::status200("Task updated");
         return;
     }
 
     public function delete($id) {
-        
-
         try {
             $task = $this->taskModel->find($id);
             if (!$task) {
@@ -123,11 +135,10 @@ class TaskController {
             }
 
             $this->taskModel->delete($id);
+            ResponseHttp::status200("Task deleted");
         } catch (Exception $e) {
             ResponseHttp::status500("Database error: " . $e->getMessage());
-            return;
         }
-        ResponseHttp::status200("Task deleted");
         return;
     }
 }

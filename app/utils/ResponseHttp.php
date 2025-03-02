@@ -12,22 +12,26 @@ class ResponseHttp {
     public static function status200($message, $data = []) {
         self::sendResponse(200, true, $message, $data);
     }
-
-    public static function status201($message = 'Resource created') {
-        http_response_code(201);
-        self::sendResponse(201, true, $message);
+    public static function status201($message = 'Resource created', $data = []) {
+        self::sendResponse(201, true, $message, $data);
     }
-
     public static function status400($message = 'Incorrect request') {
         self::sendResponse(400, false, $message);
     }
-
+    public static function status401($message = 'Incorrect request') {
+        self::sendResponse(401, false, $message);
+    }
+    public static function status403($message = 'Incorrect request') {
+        self::sendResponse(403, false, $message);
+    }
     public static function status404($message = 'Resource not found') {
         self::sendResponse(404, false, $message);
     }
-
+    public static function status409($message = 'Conflict') {
+        self::sendResponse(409, false, $message);
+    }
     public static function status500($message = 'Internal server error') {
-        self::sendResponse(200, false, $message);
+        self::sendResponse(500, false, $message);
     }
 }
 ?>

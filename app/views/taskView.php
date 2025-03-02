@@ -1,7 +1,9 @@
 <?php
 
 class TaskView {
-    public function render($tasks) {
+    public function renderList($tasks, $userName) {
+        header("Content-Type: text/html; charset=UTF-8");
+
         ?>
         <!DOCTYPE html>
         <html lang="es">
@@ -9,7 +11,7 @@ class TaskView {
             <meta charset="UTF-8">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
             <title>Lista de Tareas</title>
-            <link rel="stylesheet" href="app/views/css/taskStyle.css">
+            <link rel="stylesheet" href="/app/views/styles/taskStyle.css">
             <script src="https://kit.fontawesome.com/a83aa45581.js" crossorigin="anonymous"></script>
         </head>
         <body>
@@ -21,7 +23,8 @@ class TaskView {
             </div>
 
             <div class="container">
-                <h1 >Lista de Tareas</h1>
+                <h1> Hola <?= htmlspecialchars($userName) ?>.</h1>
+                <h1>Lista de Tareas</h1>
                 <div class="add-task">
                     <div class="add-task-title">
                         <input type="text" id="input-title" placeholder="Titulo">
@@ -31,7 +34,6 @@ class TaskView {
 
                  </div>
                 
-                <p id="error_tarea"></p>
                 <?php if (isset($tasks) && count($tasks)> 0) {?>
                     <div class="task-section">
                         <h3>Tareas Pendientes</h3>
@@ -50,7 +52,7 @@ class TaskView {
                     </div>
                 <?php } ?>
             </div>
-            <script src="app/views/scripts/taskScript.js"></script>
+            <script src="/app/views/scripts/taskScript.js"></script>
         </body>
         </html>
         <?php

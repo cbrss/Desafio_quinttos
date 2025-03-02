@@ -10,19 +10,32 @@ $taskModel = new TaskModel($database);
 $taskView = new TaskView();
 $taskController = new TaskController($taskModel, $taskView);
 
-$requestUri = explode('/', trim($_SERVER['REQUEST_URI'], '/'));
+$parsedUrl = parse_url($_SERVER['REQUEST_URI']); 
+$requestPath = trim($parsedUrl['path'], '/'); 
+
+$requestUri = explode('/', $requestPath);
 $method = $_SERVER['REQUEST_METHOD'];
 
-
-if ($requestUri[0] === '' || $requestUri[0] === 'index.php') {
-    $taskController->index();
+if ($requestUri[0] === 'tasks' && isset($requestUri[1]) && $requestUri[1] === 'list') {
+    $taskController->list();
     exit;
 }
 
 if ($requestUri[0] === 'tasks') {
     switch ($method) {
         case 'GET':
-            isset($requestUri[1]) ? $taskController->find($requestUri[1]) : $taskController->findAll();
+            error_log("requestUri[1]: " . json_encode($requestUri[1])); // Registra el valor en logs
+
+            if (isset($requestUri[1])) {
+                if ($requestUri[1] == 'list') {
+                    
+                    $taskController->list();
+                } elseif ($requestUri[1]) {
+                    $taskController->find($requestUri[1]);
+                } else {
+                    $taskController->findAll();
+                }
+            }
             break;
         case 'POST':
             $taskController->save();

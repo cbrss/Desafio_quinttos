@@ -23,6 +23,21 @@ class TaskModel {
             throw new Exception("Error fetching tasks: " . $e->getMessage());
         }
     }
+    
+    public function findAllByUser($userId) {
+        try {
+            $this->db->connect();
+            $tasks = $this->db->query("SELECT * FROM task WHERE user_id = ?", [$userId])->fetchall();
+            $tasksDTO = array_map(function($task) {
+                return new TaskModelDTO($task['id'], $task['title'], $task['description'], $task['status']);
+            }, $tasks);
+            $this->db->disconnect();
+    
+            return $tasksDTO;
+        } catch (Exception $e) {
+            throw new Exception("Error fetching tasks for user: " . $e->getMessage());
+        }
+    }
 
     public function find($id) {
         try {
@@ -36,10 +51,10 @@ class TaskModel {
         }
     }
 
-    public function save($title, $description) {
-        try{
+    public function save($title, $description, $userId) {
+        try {
             $this->db->connect();
-            $ret = $this->db->query("INSERT INTO task (title, description) VALUES (?, ?)", [$title, $description]);
+            $ret = $this->db->query("INSERT INTO task (title, description, user_id) VALUES (?, ?, ?)", [$title, $description, $userId]);
             $this->db->disconnect();
             
             return $ret;
