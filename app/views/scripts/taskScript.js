@@ -40,13 +40,12 @@ document.addEventListener("DOMContentLoaded", () => {
         button.addEventListener("click", () => {
             let id = button.dataset.id;
             disableButtons();
-            fetch("tasks/" + id)
+            fetch(id)
                 .then(response => response.json())
                 .then(data => {
                     let task = data.task;
                     let descripcionText = document.getElementById("description-text");
                     let modal = document.getElementById("modal-description");
-
                     descripcionText.innerText = task.description;
                     modal.style.display = "block";
                 })
@@ -60,12 +59,13 @@ document.addEventListener("DOMContentLoaded", () => {
         button.addEventListener("click", () => {
             let id = button.dataset.id;
             disableButtons();
-            fetch("tasks/" + id)
+            fetch(id)
                 .then(response => response.json())
                 .then(data => {
                         let task = data.task;
+                        console.log(task)
                         task.status = task.status == "in_progress" ? "completed" : "in_progress";
-                        fetch("tasks/" + id, {
+                        fetch(id, {
                             method: "PUT",
                             headers: { "Content-Type": "application/json" },
                             body: JSON.stringify(task)
@@ -83,7 +83,7 @@ document.addEventListener("DOMContentLoaded", () => {
         button.addEventListener("click", () => {
             let id = button.dataset.id;
             disableButtons();
-            fetch("tasks/" + id, { method: "DELETE" })
+            fetch(id, { method: "DELETE" })
                 .then(() => location.reload())
                 .catch(error => console.error("Fetch error:", error));
             })

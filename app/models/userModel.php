@@ -1,7 +1,5 @@
 <?php
 
-require_once 'userModelDTO.php';
-
 class UserModel {
     private $db;
 
@@ -15,7 +13,7 @@ class UserModel {
             $user = $this->db->query("SELECT * FROM user WHERE id = ?", [$id])->fetch();
             $this->db->disconnect();
 
-            return $user ? new userModelDTO($user['id'], $user['username']) : null;
+            return $user ? $user : null;
         } catch (Exception $e) {
             throw new Exception("Error fetching task: " . $e->getMessage());
         }
@@ -24,32 +22,12 @@ class UserModel {
     public function findByUsername($username) {
         try {
             $this->db->connect();
-            $user = $this->db->query("SELECT id FROM user WHERE username = ?", [$username])->fetch();
+            $user = $this->db->query("SELECT * FROM user WHERE username = ?", [$username])->fetch();
             $this->db->disconnect();
 
-            return $user !== false; 
+            return $user ? $user : null; 
         } catch (Exception $e) {
             throw new Exception("Error fetching user: " . $e->getMessage());
-        }
-    }
-
-    public function login($username, $password) {
-        try {
-            $this->db->connect();
-            $user = $this->db->query("SELECT id, username, password FROM user WHERE username = ?", [$username])->fetch();
-            $this->db->disconnect();
-
-            if (!$user) {
-                throw new Exception("User not found");
-            }
-
-            if ($user['password'] !== $password) { 
-                throw new Exception("Invalid password");
-            }
-
-            return new UserModelDTO($user['id'], $user['username']);
-        } catch (Exception $e) {
-            throw new Exception("Error during login: " . $e->getMessage());
         }
     }
 

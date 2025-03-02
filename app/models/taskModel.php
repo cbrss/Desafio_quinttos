@@ -1,6 +1,5 @@
 <?php
 
-require_once 'taskModelDTO.php';
 
 class TaskModel {
     private $db;
@@ -13,27 +12,21 @@ class TaskModel {
         try{
             $this->db->connect();
             $tasks = $this->db->query("SELECT * FROM task")->fetchall();
-            $tasksDTO = array_map(function($task) {
-                return new TaskModelDTO($task['id'], $task['title'], $task['description'], $task['status']);
-            }, $tasks);
             $this->db->disconnect();
 
-            return $tasksDTO;
+            return $tasks;
         } catch (Exception $e) {
             throw new Exception("Error fetching tasks: " . $e->getMessage());
         }
     }
     
-    public function findAllByUser($userId) {
+    public function findAllByUserId($userId) {
         try {
             $this->db->connect();
             $tasks = $this->db->query("SELECT * FROM task WHERE user_id = ?", [$userId])->fetchall();
-            $tasksDTO = array_map(function($task) {
-                return new TaskModelDTO($task['id'], $task['title'], $task['description'], $task['status']);
-            }, $tasks);
             $this->db->disconnect();
     
-            return $tasksDTO;
+            return $tasks;
         } catch (Exception $e) {
             throw new Exception("Error fetching tasks for user: " . $e->getMessage());
         }
@@ -45,7 +38,7 @@ class TaskModel {
             $task = $this->db->query("SELECT * FROM task WHERE id = ?", [$id])->fetch();
             $this->db->disconnect();
 
-            return $task ? new TaskModelDTO($task['id'], $task['title'], $task['description'], $task['status']) : null;
+            return $task ? $task : null;
         } catch (Exception $e) {
             throw new Exception("Error fetching task: " . $e->getMessage());
         }
@@ -80,6 +73,7 @@ class TaskModel {
     public function delete($id) {
         try {
             $this->db->connect();
+
             $deletedAt = date("Y-m-d H:i:s");
             $ret = $this->db->query("UPDATE task SET status = 'deleted', deleted_at = ? WHERE id = ?", [$deletedAt, $id]);
             $this->db->disconnect();

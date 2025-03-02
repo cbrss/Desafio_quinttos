@@ -24,7 +24,8 @@ class UserController {
         try {
             $user = $this->userModel->find($id);
             if ($user) {
-                ResponseHttp::status200("User found", ["user" => $user]);
+                $userDTO = new userModelDTO($user['id'], $user['username']);
+                ResponseHttp::status200("User found", ["user" => $userDTO]);
             } else {
                 ResponseHttp::status404("User not found");
             }
@@ -42,15 +43,25 @@ class UserController {
         }
     
         try {
-            $user = $this->userModel->login($data['username'], $data['password']);
+            # buscar user
+            # comparar contrasenas
+            $user = $this->userModel->findByUsername($data['username']);
+            
+            if (!$user) {
+                throw new Exception("User not found");
+            }
+            error_log(json_encode($user));
+            if ($user['password'] != $data['password']) {
+                throw new Exception("Invalid password");
+            } 
             session_start();
     
-            $_SESSION['userId'] = $user->id;
-            $_SESSION['username'] = $user->username;
+            $_SESSION['userId'] = $user['id'];
+            $_SESSION['username'] = $user['username'];
     
             ResponseHttp::status200("Login successful", [
-                "user" => $user->username,
-                "redirect" => "/tasks/list?userId=" . urlencode($user->id)
+                "user" => $user['username'],
+                "redirect" => "/tasks/list?userId=" . urlencode($user['id'])
             ]);
             
         } catch (Exception $e) {

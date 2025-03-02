@@ -4,6 +4,7 @@
 require_once 'app/models/taskModel.php';
 require_once 'app/views/taskView.php';
 require_once 'app/utils/ResponseHttp.php';
+require_once 'app/models/taskModelDTO.php';
 
 class TaskController {
     private $taskModel;
@@ -35,13 +36,16 @@ class TaskController {
             $userId = $_SESSION['userId']; 
             $userName = $_SESSION['username'];
 
-            $tasks = $this->taskModel->findAllByUser($userId);
-    
-            $tasks = array_filter($tasks, function($task) {
-                return $task->status != 'deleted';
+            $tasks = $this->taskModel->findAllByUserId($userId);
+            $tasksDTO = array_map(function($task) {
+                return new TaskModelDTO($task['id'], $task['title'], $task['description'], $task['status']);
+            }, $tasks);
+
+            $tasksDTO = array_filter($tasksDTO, function($taskDTO) {
+                return $taskDTO->status != 'deleted';
             });
     
-            $this->taskView->renderList($tasks, $userName);
+            $this->taskView->renderList($tasksDTO, $userName);
         } catch (Exception $e) {
             ResponseHttp::status500("Error: " . $e->getMessage());
         }
@@ -50,7 +54,10 @@ class TaskController {
     public function findAll() {
         try {
             $tasks = $this->taskModel->findAll();
-            ResponseHttp::status200("Tasks retrieved", ["tasks" => $tasks]);
+            $tasksDTO = array_map(function($task) {
+                return new TaskModelDTO($task['id'], $task['title'], $task['description'], $task['status']);
+            }, $tasks);
+            ResponseHttp::status200("Tasks retrieved", ["tasks" => $tasksDTO]);
         } catch (Exception $e) {
             ResponseHttp::status500("Database error: " . $e->getMessage());
         }
@@ -61,7 +68,8 @@ class TaskController {
         try {
             $task = $this->taskModel->find($id);
             if ($task) {
-                ResponseHttp::status200("Task found", ["tasks" => $task]);
+                $taskDTO = new TaskModelDTO($task['id'], $task['title'], $task['description'], $task['status']);
+                ResponseHttp::status200("Task found", ["task" => $taskDTO]);
             } else {
                 ResponseHttp::status404("Task doesn't exist");
             }

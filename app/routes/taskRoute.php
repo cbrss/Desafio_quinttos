@@ -24,7 +24,6 @@ if ($requestUri[0] === 'tasks' && isset($requestUri[1]) && $requestUri[1] === 'l
 if ($requestUri[0] === 'tasks') {
     switch ($method) {
         case 'GET':
-            error_log("requestUri[1]: " . json_encode($requestUri[1])); // Registra el valor en logs
 
             if (isset($requestUri[1])) {
                 if ($requestUri[1] == 'list') {
