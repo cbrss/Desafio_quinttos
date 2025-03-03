@@ -24,15 +24,13 @@ if ($requestUri[0] === 'tasks' && isset($requestUri[1]) && $requestUri[1] === 'l
 if ($requestUri[0] === 'tasks') {
     switch ($method) {
         case 'GET':
-
             if (isset($requestUri[1])) {
                 if ($requestUri[1] == 'list') {
-                    
                     $taskController->list();
                 } elseif ($requestUri[1]) {
                     $taskController->find($requestUri[1]);
                 } else {
-                    $taskController->findAll();
+                    echo json_encode(["success" => false, "message" => "Invalid request"]);
                 }
             }
             break;
@@ -48,8 +46,7 @@ if ($requestUri[0] === 'tasks') {
         default:
             echo json_encode(["success" => false, "message" => "error"]);
     }
-}
-else {
+} else {
     echo json_encode(["success" => false, "message" => "Error: path not found"]);
 }
 ?>

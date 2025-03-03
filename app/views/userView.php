@@ -1,7 +1,7 @@
 <?php
 
 class UserView {
-    public function renderLogin() {
+    public function renderHome() {
         header("Content-Type: text/html; charset=UTF-8");
         ?>
         <!DOCTYPE html>
@@ -10,7 +10,7 @@ class UserView {
             <meta charset="UTF-8">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
             <title>Iniciar Sesion</title>
-            <link rel="stylesheet" href="/app/views/styles/homeStyle.css">
+            <link rel="stylesheet" href="/app/views/styles/userStyle.css">
             <script src="https://kit.fontawesome.com/a83aa45581.js" crossorigin="anonymous"></script>
         </head>
         <body>
@@ -37,7 +37,7 @@ class UserView {
             </form>
         </div>
 
-        <script src="/app/views/scripts/homeScript.js"></script>
+        <script src="/app/views/scripts/userScript.js"></script>
         </body>
         </html>
         <?php

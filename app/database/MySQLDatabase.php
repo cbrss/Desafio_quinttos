@@ -21,11 +21,7 @@ class MySQLDatabase implements DatabaseInterface {
     }
 
     public function connect() {
-        try {
-            $this->connection = new PDO($this->dsn, $this->user, $this->password, $this->options);
-        } catch (PDOException $e) {
-            throw new Exception("DB connection error: $e->getMessage()");
-        }
+         $this->connection = new PDO($this->dsn, $this->user, $this->password, $this->options);
     }
     
     public function disconnect() {
@@ -36,18 +32,9 @@ class MySQLDatabase implements DatabaseInterface {
         if (!$this->connection) {
             throw new Exception("DB connection error");
         }
-        try {
-            $stmt = $this->connection->prepare($sql);
-            $stmt->execute($params);
-        } catch (PDOException $e) {
-            throw new Exception("DB connection error: " . $e->getMessage());
-        }
-        
+        $stmt = $this->connection->prepare($sql);
+        $stmt->execute($params);
         return $stmt;
     }
-
 }
-
-    
-
 ?>

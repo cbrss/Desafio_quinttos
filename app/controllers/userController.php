@@ -16,8 +16,8 @@ class UserController {
         $this->userView = $userView;
     }
 
-    public function showLoginPage() {
-        $this->userView->renderLogin();
+    public function showHomePage() {
+        $this->userView->renderHome();
     }
 
     public function find($id) {
@@ -32,6 +32,8 @@ class UserController {
         } catch (Exception $e) {
             ResponseHttp::status500("Database error: " . $e->getMessage());
         }
+
+        return;
     }
 
     public function login() {
@@ -43,14 +45,12 @@ class UserController {
         }
     
         try {
-            # buscar user
-            # comparar contrasenas
+
             $user = $this->userModel->findByUsername($data['username']);
             
             if (!$user) {
                 throw new Exception("User not found");
             }
-            error_log(json_encode($user));
             if ($user['password'] != $data['password']) {
                 throw new Exception("Invalid password");
             } 
@@ -65,14 +65,14 @@ class UserController {
             ]);
             
         } catch (Exception $e) {
-            error_log("Parsed Request Path: " . json_encode($e)); 
-
             if ($e->getMessage() === "User not found" || $e->getMessage() === "Invalid password") {
                 ResponseHttp::status401("Invalid credentials");
             } else {
                 ResponseHttp::status500("Database error: " . $e->getMessage());
             }
         }
+
+        return;
     }
     
 
@@ -99,6 +99,8 @@ class UserController {
         } catch (Exception $e) {
             ResponseHttp::status500("Database error: " . $e->getMessage());
         }
+
+        return;
     }
 
     private function isValidRegisterData($data) {

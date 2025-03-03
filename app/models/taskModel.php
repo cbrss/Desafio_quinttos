@@ -1,6 +1,5 @@
 <?php
 
-
 class TaskModel {
     private $db;
 
@@ -13,9 +12,9 @@ class TaskModel {
             $this->db->connect();
             $tasks = $this->db->query("SELECT * FROM task")->fetchall();
             $this->db->disconnect();
-
+            
             return $tasks;
-        } catch (Exception $e) {
+        } catch (Exception  $e) {
             throw new Exception("Error fetching tasks: " . $e->getMessage());
         }
     }
@@ -56,7 +55,7 @@ class TaskModel {
         }
     }
 
-    public function update($id, $status) {
+    public function updateStatus($id, $status) {
         try {
             $this->db->connect();
             $completedAt = ($status == 'completed' ? date("Y-m-d H:i:s"): null);
@@ -65,24 +64,21 @@ class TaskModel {
 
             return $ret;
         } catch (Exception $e) {
-            throw new Exception("Error updating task: $e->getMessage()");
+            throw new Exception("Error updating task: " . $e->getMessage());
         }
-        
     }
 
     public function delete($id) {
         try {
             $this->db->connect();
-
             $deletedAt = date("Y-m-d H:i:s");
             $ret = $this->db->query("UPDATE task SET status = 'deleted', deleted_at = ? WHERE id = ?", [$deletedAt, $id]);
             $this->db->disconnect();
 
             return $ret;
         } catch (Exception $e) {
-            throw new Exception("Error deleting task: " . $e->getMessage());    
+            throw new Exception("Error deleting task: " . $e->getMessage(), 0, $e);        
         }
-
      }
 }
 ?>

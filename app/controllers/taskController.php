@@ -1,10 +1,9 @@
 <?php
-
-
 require_once 'app/models/taskModel.php';
 require_once 'app/views/taskView.php';
 require_once 'app/utils/ResponseHttp.php';
 require_once 'app/models/taskModelDTO.php';
+
 
 class TaskController {
     private $taskModel;
@@ -20,15 +19,15 @@ class TaskController {
 
     public function list() {
         session_start(); 
-
         if (!isset($_SESSION['userId'])) {
-            ResponseHttp::status401("Unauthorized: You must log in");
+            ResponseHttp::status401("You must log in");
             return;
         }
+
         $sessionUserId = $_SESSION['userId'];
         $urlUserId = isset($_GET['userId']) ? intval($_GET['userId']) : null;
         if ($urlUserId !== $sessionUserId) {
-            ResponseHttp::status403("Forbidden: You do not have permission to access this resource");
+            ResponseHttp::status403("You do not have permission to access this resource");
             return;
         }
 
@@ -49,22 +48,17 @@ class TaskController {
         } catch (Exception $e) {
             ResponseHttp::status500("Error: " . $e->getMessage());
         }
-    }
 
-    public function findAll() {
-        try {
-            $tasks = $this->taskModel->findAll();
-            $tasksDTO = array_map(function($task) {
-                return new TaskModelDTO($task['id'], $task['title'], $task['description'], $task['status']);
-            }, $tasks);
-            ResponseHttp::status200("Tasks retrieved", ["tasks" => $tasksDTO]);
-        } catch (Exception $e) {
-            ResponseHttp::status500("Database error: " . $e->getMessage());
-        }
         return;
     }
 
     public function find($id) {
+        session_start();
+        if (!isset($_SESSION['userId'])) {
+            ResponseHttp::status401("You must log in");
+            return;
+        }
+        
         try {
             $task = $this->taskModel->find($id);
             if ($task) {
@@ -76,39 +70,40 @@ class TaskController {
         } catch (Exception $e) {
             ResponseHttp::status500("Database error: " . $e->getMessage());
         }
+
         return;
     }
 
     public function save() { 
-        $data = json_decode(file_get_contents("php://input"), true);
         session_start();
-
         if (!isset($_SESSION['userId'])) {
-            ResponseHttp::status401("Unauthorized: You must log in");
+            ResponseHttp::status401("You must log in");
+            return;
+        }
+        
+        $data = json_decode(file_get_contents("php://input"), true);
+        if (!$this->isValidTaskData($data)) {
             return;
         }
 
-        if (empty($data['title']) || empty($data['description'])) {
-            ResponseHttp::status400("Missing fields");
-        } else if(!preg_match(self::$validateTaskTitle, $data['title'])) {
-            ResponseHttp::status400("Invalid title, must be 1-255 characters long & contain only numbers and letters");
-        } else if (!preg_match(self::$validateTaskDescription, $data['description'])) {
-            ResponseHttp::status400("Invalid description, must be 1-255 characters long");
-        } else {
-            try{
+        try {
                 $userId = $_SESSION['userId'];
                 $this->taskModel->save($data['title'], $data['description'], $userId);
                 ResponseHttp::status201("Task created");
-            } catch (Exception $e) {
-                ResponseHttp::status500("Database error: " . $e->getMessage());
-            }
-
+        } catch (Exception $e) {
+            ResponseHttp::status500("Database error: " . $e->getMessage());
         }
 
         return;
     }
 
     public function edit($id) {
+        session_start();
+        if (!isset($_SESSION['userId'])) {
+            ResponseHttp::status401("You must log in");
+            return;
+        }
+
         $data = json_decode(file_get_contents("php://input"), true);
         $task = NULL;
         try{
@@ -119,23 +114,31 @@ class TaskController {
         }
         if (!$task) {
             ResponseHttp::status404("Task doesn't exist");
+            return;
         }
-        if (empty($data['title'])) {
-            $data['title'] = $task->title;
+
+        if (!in_array($data['status'], ["completed", "in_progress"])) {
+            ResponseHttp::status400("Invalid status, allowed values are: compelted, in_progress ");
+            return;
         }
-        if (empty($data['description'])) {
-            $data['description'] = $task->description;
-        }
+
         try{
-            $this->taskModel->update($id, $data['status']);
+            $this->taskModel->updateStatus($id, $data['status']);
             ResponseHttp::status200("Task updated");
         } catch (Exception $e) {
             ResponseHttp::status500("Database error: " . $e->getMessage());
         }
+
         return;
     }
 
     public function delete($id) {
+        session_start();
+        if (!isset($_SESSION['userId'])) {
+            ResponseHttp::status401("You must log in");
+            return;
+        }
+
         try {
             $task = $this->taskModel->find($id);
             if (!$task) {
@@ -147,7 +150,32 @@ class TaskController {
         } catch (Exception $e) {
             ResponseHttp::status500("Database error: " . $e->getMessage());
         }
+
         return;
+    }
+
+    private function isValidTaskData($data) {
+        if (empty($data['title'])) {
+            ResponseHttp::status400("Title is required");
+            return false;
+        }
+
+        if (isset($data['title']) && !preg_match(self::$validateTaskTitle, $data['title'])) {
+            ResponseHttp::status400("Invalid title, must be 1-255 characters long & contain only numbers and letters");
+            return false;
+        }
+
+        if (empty($data['description'])) {
+            ResponseHttp::status400("Description is required");
+            return false;
+        }
+
+        if (isset($data['description']) && !preg_match(self::$validateTaskDescription, $data['description'])) {
+            ResponseHttp::status400("Invalid description, must be 1-255 characters long");
+            return false;
+        }
+
+        return true;
     }
 }
 ?>

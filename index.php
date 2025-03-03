@@ -3,7 +3,7 @@
 $requestUri = trim($_SERVER['REQUEST_URI'], '/');
 
 if ($requestUri === '') { 
-    header("Location: /users/login");
+    header("Location: /users/home");
     return;
 }
 

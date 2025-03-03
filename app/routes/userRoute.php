@@ -18,28 +18,25 @@ $method = $_SERVER['REQUEST_METHOD'];
 if ($requestUri[0] === 'users') {
     switch ($method) {
         case 'GET':
-            if (isset($requestUri[1])) {
-                if ($requestUri[1] === 'login') {
-                    $userController->showLoginPage(); 
-                } else {
-                    $userController->find($requestUri[1]);
-                }
-            } else {
+            if (!isset($requestUri[1])) {
                 echo json_encode(["success" => false, "message" => "User ID required"]);
+            }
+            if ($requestUri[1] === 'home') {
+                $userController->showHomePage(); 
+            } else {
+                $userController->find($requestUri[1]);
             }
             break;
         case 'POST':
-            if (isset($requestUri[1])) {
-                if ($requestUri[1] === 'login') {
-                    $userController->login();
-                } elseif ($requestUri[1] === 'register') {
-                    $userController->register(); 
-                } else {
-                    echo json_encode(["success" => false, "message" => "Invalid request"]);
-                }
-            } else {
+            if (!isset($requestUri[1])) {
                 echo json_encode(["success" => false, "message" => "Invalid request"]);
             }
+            if ($requestUri[1] === 'login') {
+                $userController->login();
+            } elseif ($requestUri[1] === 'register') {
+                $userController->register(); 
+            }
+
             break;
         default:
             echo json_encode(["success" => false, "message" => "Error: Invalid request"]);

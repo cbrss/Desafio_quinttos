@@ -23,16 +23,15 @@ document.addEventListener("DOMContentLoaded", () => {
                 alert("Error: La descripcion debe tener entre 1 y 255 caracteres");
                 return;
             }
-
             disableButtons();
-            fetch("tasks", {
+
+            fetch("/tasks", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ title: title.value, description: description.value })
                 })
                 .then(() => location.reload())
                 .catch(error => console.error("Fetch error:", error));
-
         })
     });
 
@@ -40,7 +39,8 @@ document.addEventListener("DOMContentLoaded", () => {
         button.addEventListener("click", () => {
             let id = button.dataset.id;
             disableButtons();
-            fetch(id)
+            
+            fetch(`/tasks/${id}`)
                 .then(response => response.json())
                 .then(data => {
                     let task = data.task;
@@ -59,7 +59,8 @@ document.addEventListener("DOMContentLoaded", () => {
         button.addEventListener("click", () => {
             let id = button.dataset.id;
             disableButtons();
-            fetch(id)
+
+            fetch(`/tasks/${id}`)
                 .then(response => response.json())
                 .then(data => {
                         let task = data.task;
@@ -83,7 +84,8 @@ document.addEventListener("DOMContentLoaded", () => {
         button.addEventListener("click", () => {
             let id = button.dataset.id;
             disableButtons();
-            fetch(id, { method: "DELETE" })
+            
+            fetch(`/tasks/${id}`, { method: "DELETE" })
                 .then(() => location.reload())
                 .catch(error => console.error("Fetch error:", error));
             })
