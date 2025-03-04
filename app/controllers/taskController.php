@@ -70,11 +70,11 @@ class TaskController {
         return;
     }
 
-    public function edit($id) {
+    public function edit() {
         $data = json_decode(file_get_contents("php://input"), true);
-        $task = NULL;
+        $task = null;
         try{
-            $task = $this->taskModel->find($id);
+            $task = $this->taskModel->find($data['id']);
         } catch (Exception $e) {
             ResponseHttp::status500("Database error: " . $e->getMessage());
             return;
@@ -90,7 +90,7 @@ class TaskController {
         }
 
         try{
-            $this->taskModel->updateStatus($id, $data['status']);
+            $this->taskModel->updateStatus($data['id'], $data['status']);
             ResponseHttp::status200("Task updated");
         } catch (Exception $e) {
             ResponseHttp::status500("Database error: " . $e->getMessage());
@@ -99,14 +99,16 @@ class TaskController {
         return;
     }
 
-    public function delete($id) {
+    public function delete() {
+        $data = json_decode(file_get_contents("php://input"), true);
+
         try {
-            $task = $this->taskModel->find($id);
+            $task = $this->taskModel->find($data['id']);
             if (!$task) {
                 ResponseHttp::status404("Task doesn't exist");
             }
 
-            $this->taskModel->delete($id);
+            $this->taskModel->delete($data['id']);
             ResponseHttp::status200("Task deleted");
         } catch (Exception $e) {
             ResponseHttp::status500("Database error: " . $e->getMessage());

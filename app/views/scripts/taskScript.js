@@ -8,6 +8,36 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     })
     
+    document.querySelectorAll(".show-button").forEach(button => {
+        button.addEventListener("click", () => {
+            let id = button.dataset.id;
+            disableButtons();
+            
+            fetch(`/tasks/${id}`, {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                }
+            })
+            .then(response => {
+                if (response.status === 401 ) {
+                    handleTokenExpiration();
+                }
+                return response.json()
+            })
+            .then(data => {
+                let task = data.task;
+                let descripcionText = document.getElementById("description-text");
+                let modal = document.getElementById("modal-description");
+                descripcionText.innerText = task.description;
+                modal.style.display = "block";
+            })
+            .catch(error => console.error("Fetch error:", error))
+            .finally(() => enableButtons())
+
+        });
+    });
+    
     document.querySelectorAll(".add-button").forEach(button => {
         button.addEventListener("click", () => {
             let title = document.querySelector("#input-title");
@@ -43,36 +73,6 @@ document.addEventListener("DOMContentLoaded", () => {
         })
     });
 
-    document.querySelectorAll(".show-button").forEach(button => {
-        button.addEventListener("click", () => {
-            let id = button.dataset.id;
-            disableButtons();
-            
-            fetch(`/tasks/${id}`, {
-                method: "GET",
-                headers: {
-                    "Content-Type": "application/json",
-                }
-            })
-            .then(response => {
-                if (response.status === 401 ) {
-                    handleTokenExpiration();
-                }
-                return response.json()
-            })
-            .then(data => {
-                let task = data.task;
-                let descripcionText = document.getElementById("description-text");
-                let modal = document.getElementById("modal-description");
-                descripcionText.innerText = task.description;
-                modal.style.display = "block";
-            })
-            .catch(error => console.error("Fetch error:", error))
-            .finally(() => enableButtons())
-
-        });
-    });
-
     document.querySelectorAll(".completed-button").forEach(button => {
         button.addEventListener("click", () => {
             let id = button.dataset.id;
@@ -93,7 +93,7 @@ document.addEventListener("DOMContentLoaded", () => {
             .then(data => {
                     let task = data.task;
                     task.status = task.status == "in_progress" ? "completed" : "in_progress";
-                    fetch(id, {
+                    fetch('/tasks',{
                         method: "PUT",
                         headers: { 
                             "Content-Type": "application/json",
@@ -119,11 +119,12 @@ document.addEventListener("DOMContentLoaded", () => {
             let id = button.dataset.id;
             disableButtons();
             
-            fetch(`/tasks/${id}`, { 
+            fetch('/tasks',{ 
                     method: "DELETE",
                     headers: {
                         "Content-Type": "application/json",
-                    }
+                    },
+                    body: JSON.stringify({"id": id})
             })
             .then(response => {
                 if (response.status === 401) {

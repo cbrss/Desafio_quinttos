@@ -6,18 +6,6 @@ class TaskModel {
     public function __construct(DatabaseInterface $db) {
         $this->db = $db;
     }
-
-    public function findAll() {
-        try{
-            $this->db->connect();
-            $tasks = $this->db->query("SELECT * FROM task")->fetchall();
-            $this->db->disconnect();
-            
-            return $tasks;
-        } catch (Exception  $e) {
-            throw new Exception("Error fetching tasks: " . $e->getMessage());
-        }
-    }
     
     public function findAllByUserId($userId) {
         try {

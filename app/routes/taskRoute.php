@@ -62,10 +62,10 @@ if ($requestUri[0] === 'tasks') {
             $taskController->save($payload->data);
             break;
         case 'PUT':
-            $taskController->edit($requestUri[1]);
+            $taskController->edit();
             break;
         case 'DELETE':
-            $taskController->delete($requestUri[1]);
+            $taskController->delete();
             break;
         default:
             HttpResponse::status404("Path not found");
