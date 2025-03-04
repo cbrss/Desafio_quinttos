@@ -4,11 +4,30 @@ require_once 'app/controllers/taskController.php';
 require_once 'app/database/MySQLDatabase.php';
 require_once 'app/config/config.php';
 require_once 'app/views/taskView.php';
+require_once 'app/utils/ResponseHttp.php';
 
-$database = new MySQLDatabase(DB_HOST, DB_NAME, DB_USER, DB_PASS, DB_PORT);
-$taskModel = new TaskModel($database);
-$taskView = new TaskView();
-$taskController = new TaskController($taskModel, $taskView);
+
+$token = $_COOKIE['authToken'] ?? null;
+
+if (!$token) {
+    $headers = getallheaders();
+    $authHeader = isset($headers['Authorization']) ? $headers['Authorization'] : "";
+
+    if (preg_match("/Bearer\s(\S+)/", $authHeader, $matches)) {
+        $token = $matches[1];
+    }
+}
+
+if (!$token) {
+    ResponseHttp::status401("Unauthorized token");
+    return;
+}
+
+$payload = JWTHandler::decode($token);
+if (!$payload) {
+    ResponseHttp::status401("Invalid token");
+    return;
+}
 
 $parsedUrl = parse_url($_SERVER['REQUEST_URI']); 
 $requestPath = trim($parsedUrl['path'], '/'); 
@@ -16,26 +35,28 @@ $requestPath = trim($parsedUrl['path'], '/');
 $requestUri = explode('/', $requestPath);
 $method = $_SERVER['REQUEST_METHOD'];
 
-if ($requestUri[0] === 'tasks' && isset($requestUri[1]) && $requestUri[1] === 'list') {
-    $taskController->list();
-    exit;
-}
+$database = new MySQLDatabase(DB_HOST, DB_NAME, DB_USER, DB_PASS, DB_PORT);
+$taskModel = new TaskModel($database);
+$taskView = new TaskView();
+$taskController = new TaskController($taskModel, $taskView);
+
+
 
 if ($requestUri[0] === 'tasks') {
     switch ($method) {
         case 'GET':
             if (isset($requestUri[1])) {
                 if ($requestUri[1] == 'list') {
-                    $taskController->list();
+                    $taskController->homeTask($payload->data);
                 } elseif ($requestUri[1]) {
-                    $taskController->find($requestUri[1]);
+                    $taskController->find($requestUri[1], $payload->data);
                 } else {
-                    echo json_encode(["success" => false, "message" => "Invalid request"]);
+                    HttpResponse::status404("Path not found");
                 }
             }
             break;
         case 'POST':
-            $taskController->save();
+            $taskController->save($payload->data);
             break;
         case 'PUT':
             $taskController->edit($requestUri[1]);
@@ -44,9 +65,9 @@ if ($requestUri[0] === 'tasks') {
             $taskController->delete($requestUri[1]);
             break;
         default:
-            echo json_encode(["success" => false, "message" => "error"]);
+            HttpResponse::status404("Path not found");
     }
 } else {
-    echo json_encode(["success" => false, "message" => "Error: path not found"]);
+    HttpResponse::status404("Path not found");
 }
 ?>

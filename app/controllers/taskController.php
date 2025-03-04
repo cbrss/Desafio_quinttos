@@ -3,13 +3,15 @@ require_once 'app/models/taskModel.php';
 require_once 'app/views/taskView.php';
 require_once 'app/utils/ResponseHttp.php';
 require_once 'app/models/taskModelDTO.php';
+require_once "app/config/jwt.php";
+require_once "app/utils/JWTHandler.php";
 
 
 class TaskController {
     private $taskModel;
     private $taskView;
 
-    private static $validateTaskTitle= '/^[a-zA-Z0-9]{1,255}$/'; 
+    private static $validateTaskTitle= '/^[a-zA-Z0-9 ]{1,255}$/'; 
     private static $validateTaskDescription = '/^.{1,255}$/s';
 
     public function __construct($taskModel, $taskView) {
@@ -17,25 +19,9 @@ class TaskController {
         $this->taskView = $taskView;
     }
 
-    public function list() {
-        session_start(); 
-        if (!isset($_SESSION['userId'])) {
-            ResponseHttp::status401("You must log in");
-            return;
-        }
-
-        $sessionUserId = $_SESSION['userId'];
-        $urlUserId = isset($_GET['userId']) ? intval($_GET['userId']) : null;
-        if ($urlUserId !== $sessionUserId) {
-            ResponseHttp::status403("You do not have permission to access this resource");
-            return;
-        }
-
+    public function homeTask($user) {
         try {
-            $userId = $_SESSION['userId']; 
-            $userName = $_SESSION['username'];
-
-            $tasks = $this->taskModel->findAllByUserId($userId);
+            $tasks = $this->taskModel->findAllByUserId($user->id);
             $tasksDTO = array_map(function($task) {
                 return new TaskModelDTO($task['id'], $task['title'], $task['description'], $task['status']);
             }, $tasks);
@@ -43,8 +29,8 @@ class TaskController {
             $tasksDTO = array_filter($tasksDTO, function($taskDTO) {
                 return $taskDTO->status != 'deleted';
             });
-    
-            $this->taskView->renderList($tasksDTO, $userName);
+
+            $this->taskView->renderList($tasksDTO, $user->username);
         } catch (Exception $e) {
             ResponseHttp::status500("Error: " . $e->getMessage());
         }
@@ -53,12 +39,7 @@ class TaskController {
     }
 
     public function find($id) {
-        session_start();
-        if (!isset($_SESSION['userId'])) {
-            ResponseHttp::status401("You must log in");
-            return;
-        }
-        
+
         try {
             $task = $this->taskModel->find($id);
             if ($task) {
@@ -74,21 +55,14 @@ class TaskController {
         return;
     }
 
-    public function save() { 
-        session_start();
-        if (!isset($_SESSION['userId'])) {
-            ResponseHttp::status401("You must log in");
-            return;
-        }
-        
+    public function save($user) { 
         $data = json_decode(file_get_contents("php://input"), true);
         if (!$this->isValidTaskData($data)) {
             return;
         }
 
         try {
-                $userId = $_SESSION['userId'];
-                $this->taskModel->save($data['title'], $data['description'], $userId);
+                $this->taskModel->save($data['title'], $data['description'], $user->id);
                 ResponseHttp::status201("Task created");
         } catch (Exception $e) {
             ResponseHttp::status500("Database error: " . $e->getMessage());
@@ -98,12 +72,6 @@ class TaskController {
     }
 
     public function edit($id) {
-        session_start();
-        if (!isset($_SESSION['userId'])) {
-            ResponseHttp::status401("You must log in");
-            return;
-        }
-
         $data = json_decode(file_get_contents("php://input"), true);
         $task = NULL;
         try{
@@ -133,12 +101,6 @@ class TaskController {
     }
 
     public function delete($id) {
-        session_start();
-        if (!isset($_SESSION['userId'])) {
-            ResponseHttp::status401("You must log in");
-            return;
-        }
-
         try {
             $task = $this->taskModel->find($id);
             if (!$task) {

@@ -36,46 +36,6 @@ class UserController {
         return;
     }
 
-    public function login() {
-        $data = json_decode(file_get_contents("php://input"), true);
-        
-        if (empty($data['username']) || empty($data['password'])) {
-            ResponseHttp::status400("Missing fields");
-            return;
-        }
-    
-        try {
-
-            $user = $this->userModel->findByUsername($data['username']);
-            
-            if (!$user) {
-                throw new Exception("User not found");
-            }
-            if ($user['password'] != $data['password']) {
-                throw new Exception("Invalid password");
-            } 
-            session_start();
-    
-            $_SESSION['userId'] = $user['id'];
-            $_SESSION['username'] = $user['username'];
-    
-            ResponseHttp::status200("Login successful", [
-                "user" => $user['username'],
-                "redirect" => "/tasks/list?userId=" . urlencode($user['id'])
-            ]);
-            
-        } catch (Exception $e) {
-            if ($e->getMessage() === "User not found" || $e->getMessage() === "Invalid password") {
-                ResponseHttp::status401("Invalid credentials");
-            } else {
-                ResponseHttp::status500("Database error: " . $e->getMessage());
-            }
-        }
-
-        return;
-    }
-    
-
     public function register() {
         $data = json_decode(file_get_contents("php://input"), true);
 
@@ -94,7 +54,6 @@ class UserController {
             
             ResponseHttp::status201("User registered successfully", [
                 "success" => true,
-                "redirect" => "/users/login"
             ]);
         } catch (Exception $e) {
             ResponseHttp::status500("Database error: " . $e->getMessage());

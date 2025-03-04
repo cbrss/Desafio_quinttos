@@ -6,7 +6,6 @@ if ($requestUri === '') {
     header("Location: /users/home");
     return;
 }
-
 else if (strpos($requestUri, 'tasks') === 0) {
     header('Content-Type: application/json');
 

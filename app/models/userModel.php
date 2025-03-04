@@ -33,7 +33,9 @@ class UserModel {
 
     public function register($username, $password) {
         try {
+
             $this->db->connect();
+            $password = password_hash($password, PASSWORD_BCRYPT);
             $ret = $this->db->query("INSERT INTO user (username, password) VALUES (?, ?)", [$username, $password]);
             $this->db->disconnect();
     

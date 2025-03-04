@@ -54,9 +54,12 @@ document.addEventListener("DOMContentLoaded", () => {
             console.log("Server response:", result);
             if (result.success) {
                 if (formType == 'register') {
-                    alert("Usuario registrado exitosamente.")
+                    alert("Usuario registrado exitosamente.");
+                    window.location.href = "/users/home";
+                } else {
+                    localStorage.setItem("authToken", result.token);
+                    window.location.href = "/tasks/list";
                 }
-                window.location.href = result.redirect;  
             } else {
                 alert("Error: " + result.message); 
             }

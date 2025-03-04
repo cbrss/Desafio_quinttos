@@ -12,8 +12,8 @@ class ResponseHttp {
     public static function status200($message, $data = []) {
         self::sendResponse(200, true, $message, $data);
     }
-    public static function status201($message = 'Resource created', $data = []) {
-        self::sendResponse(201, true, $message, $data);
+    public static function status201($message = 'Resource created') {
+        self::sendResponse(201, true, $message);
     }
     public static function status400($message = 'Incorrect request') {
         self::sendResponse(400, false, $message);
