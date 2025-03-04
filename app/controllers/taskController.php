@@ -3,7 +3,6 @@ require_once 'app/models/taskModel.php';
 require_once 'app/views/taskView.php';
 require_once 'app/utils/ResponseHttp.php';
 require_once 'app/models/taskModelDTO.php';
-require_once "app/config/jwt.php";
 require_once "app/utils/JWTHandler.php";
 
 

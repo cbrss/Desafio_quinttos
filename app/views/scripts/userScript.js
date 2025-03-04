@@ -51,7 +51,6 @@ document.addEventListener("DOMContentLoaded", () => {
         })
         .then(response => response.json())
         .then(result => {
-            console.log("Server response:", result);
             if (result.success) {
                 if (formType == 'register') {
                     alert("Usuario registrado exitosamente.");

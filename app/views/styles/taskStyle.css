@@ -43,7 +43,6 @@ body {
 .add-task-title {
     display: flex;
     align-items: center;
-    gap: 10px;
 }
 
 .add-task input {

@@ -2,9 +2,9 @@
 <?php
 
 require_once "vendor/autoload.php";
-require_once "app/config/jwt.php";
 require_once "app/models/userModel.php";
 require_once "app/utils/JWTHandler.php";
+require_once "app/config/JWTConfig.php";
 
 class authController {
     private $userModel;
@@ -28,23 +28,22 @@ class authController {
             if (!password_verify($data['password'], $user['password'])){
                 throw new Exception("Invalid password");
             } 
-            $expirationTime = time() + EXPIRATION_TIME;
+            $EXPIRATION_TIME = time() + JWTConfig::getExpirationTime();
+            $ISSUER = JWTConfig::getIssuer();
+            $AUDIENCE = JWTConfig::getAudience();
 
             $token = JWTHandler::encode([
-                "iss" => ISSUER,
-                "aud" => AUDIENCE,
-                "exp" => $expirationTime,
+                "iss" => $ISSUER,
+                "aud" => $AUDIENCE,
+                "exp" => $EXPIRATION_TIME,
                 "data" => [
                     "id" => $user['id'],
                     "username" => $user['username']
                 ]
             ]);
             setcookie('authToken', $token, [
-                'expires' => $expirationTime,
                 'path' => '/'
             ]);
-
-            
     
             ResponseHttp::status200("Login successful", [
                 "token" => $token,

@@ -3,9 +3,9 @@
 class ResponseHttp {
     private static function sendResponse($statusCode, $success, $message, $data = []){
         http_response_code($statusCode);
-        header('Content-Type: application/json');
+        header('Content-Type: application/json; charset=UTF-8');
         $response = array_merge(["success" => $success, "message" => $message], $data);
-        echo json_encode($response, JSON_UNESCAPED_UNICODE);
+        echo json_encode($response);
         return;
     }
 
@@ -18,10 +18,10 @@ class ResponseHttp {
     public static function status400($message = 'Incorrect request') {
         self::sendResponse(400, false, $message);
     }
-    public static function status401($message = 'Incorrect request') {
+    public static function status401($message = 'Unauthorized request') {
         self::sendResponse(401, false, $message);
     }
-    public static function status403($message = 'Incorrect request') {
+    public static function status403($message = 'Forbidden request') {
         self::sendResponse(403, false, $message);
     }
     public static function status404($message = 'Resource not found') {

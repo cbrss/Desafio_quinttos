@@ -7,13 +7,13 @@ if ($requestUri === '') {
     return;
 }
 else if (strpos($requestUri, 'tasks') === 0) {
-    header('Content-Type: application/json');
+    header('Content-Type: application/json; charset=UTF-8');
 
     require_once './app/routes/taskRoute.php';
     return;
 }
 else if (strpos($requestUri, 'users') === 0) {
-    header('Content-Type: application/json');
+    header('Content-Type: application/json; charset=UTF-8');
 
     require_once './app/routes/userRoute.php';
     return;

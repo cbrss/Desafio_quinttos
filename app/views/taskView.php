@@ -24,7 +24,7 @@ class TaskView {
 
             <div class="container">
                 <h1> Hola <?= htmlspecialchars($userName) ?>.</h1>
-                <h1>Lista de Tareas</h1>
+                <h1>Planifica tus tareas</h1>
                 <div class="add-task">
                     <div class="add-task-title">
                         <input type="text" id="input-title" placeholder="Titulo">

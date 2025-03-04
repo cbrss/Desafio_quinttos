@@ -3,10 +3,16 @@
 require_once 'app/controllers/userController.php';
 require_once 'app/controllers/authController.php';
 require_once 'app/database/MySQLDatabase.php';
-require_once 'app/config/config.php';
+require_once 'app/config/DBConfig.php';
 require_once 'app/utils/ResponseHttp.php';
 
-$database = new MySQLDatabase(DB_HOST, DB_NAME, DB_USER, DB_PASS, DB_PORT);
+$DB_HOST = DBConfig::getHost();
+$DB_NAME = DBConfig::getName();
+$DB_USER = DBConfig::getUser();
+$DB_PASS = DBConfig::getPass();
+$DB_PORT = DBConfig::getPort();
+
+$database = new MySQLDatabase($DB_HOST, $DB_NAME, $DB_USER, $DB_PASS, $DB_PORT);
 $userModel = new UserModel($database);
 $userView = new UserView();
 $userController = new UserController($userModel, $userView);

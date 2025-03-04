@@ -2,7 +2,6 @@
 document.addEventListener("DOMContentLoaded", () => {
 
     window.addEventListener("click", (e) => {
-        if (checkTokenExpiration()) return;
         let modal = document.getElementById("modal-description")
         if (e.target == modal) {
             modal.style.display = "none";
@@ -55,7 +54,6 @@ document.addEventListener("DOMContentLoaded", () => {
                     "Content-Type": "application/json",
                 }
             })
-            
             .then(response => {
                 if (response.status === 401 ) {
                     handleTokenExpiration();
@@ -94,7 +92,6 @@ document.addEventListener("DOMContentLoaded", () => {
             })
             .then(data => {
                     let task = data.task;
-                    console.log(task)
                     task.status = task.status == "in_progress" ? "completed" : "in_progress";
                     fetch(id, {
                         method: "PUT",
