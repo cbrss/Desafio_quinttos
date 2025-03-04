@@ -106,6 +106,7 @@ class TaskController {
             $task = $this->taskModel->find($data['id']);
             if (!$task) {
                 ResponseHttp::status404("Task doesn't exist");
+                return;
             }
 
             $this->taskModel->delete($data['id']);
