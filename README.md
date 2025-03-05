@@ -23,15 +23,27 @@ La aplicación debe proporcionar las siguientes funcionalidades básicas:
 - **Postman**: Utilizada para testear los distintos endpoint y documentar los mismos. Se puede consultar la misma en el siguiente link: [documentacion](https://documenter.getpostman.com/view/31980709/2sAYdioV4U#81ca6749-3534-402e-a818-3b12d2a055e1)
 - **Composer**: Gestion de dependencias PHP
 
-
+## Requisitos previos
+- PHP
+   ```bash
+   sudo apt install php php-cli php-curl php-mysql -y
+- Composer
+    ```bash
+   sudo apt install composer
 ## Ejecucion local
 
 1. **Clona el Repositorio:**
    ```bash
    git clone https://github.com/cbrss/Desafio_quinttos
-2. **Iniciar el servidor PHP:**
+2. **Acceder a la carpeta raiz:**
+      ```bash
+   cd ./Desafio_quinttos
+2. **Descargar dependencias:**
+   ```bash
+   composer install
+3. **Iniciar el servidor PHP:**
     ```bash
     php -S localhost:8000
-3. **Acceder a la URL:**
+4. **Acceder a la URL:**
    ```bash
    http://localhost:8000

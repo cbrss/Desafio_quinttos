@@ -4,7 +4,6 @@ require_once 'app/controllers/userController.php';
 require_once 'app/controllers/authController.php';
 require_once 'app/database/MySQLDatabase.php';
 require_once 'app/config/DBConfig.php';
-require_once 'app/utils/ResponseHttp.php';
 
 $DB_HOST = DBConfig::getHost();
 $DB_NAME = DBConfig::getName();

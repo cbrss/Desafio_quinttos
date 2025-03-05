@@ -4,6 +4,7 @@ $requestUri = trim($_SERVER['REQUEST_URI'], '/');
 
 if ($requestUri === '') { 
     header("Location: /users/home");
+    
     return;
 }
 else if (strpos($requestUri, 'tasks') === 0) {
