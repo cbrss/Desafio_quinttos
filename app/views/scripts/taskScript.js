@@ -1,4 +1,3 @@
-
 document.addEventListener("DOMContentLoaded", () => {
 
     window.addEventListener("click", (e) => {
@@ -20,9 +19,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 }
             })
             .then(response => {
-                if (response.status === 401 ) {
-                    handleTokenExpiration();
-                }
+                handleErrorStatus(response.status);
                 return response.json()
             })
             .then(data => {
@@ -64,9 +61,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 body: JSON.stringify({ title: title.value, description: description.value })
             })
             .then(response => {
-                if (response.status === 401) {
-                    handleTokenExpiration();
-                }
+                handleErrorStatus(response.status);
             })
             .then(() => location.reload())
             .catch(error => console.error("Fetch error:", error));
@@ -85,9 +80,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 }
             })
             .then(response => {
-                if (response.status === 401) {
-                    handleTokenExpiration();
-                } 
+                handleErrorStatus(response.status); 
                 return response.json();
             })
             .then(data => {
@@ -101,9 +94,7 @@ document.addEventListener("DOMContentLoaded", () => {
                         body: JSON.stringify(task)
                     })
                     .then(response => {
-                        if (response.status === 401) {
-                            handleTokenExpiration();
-                        } 
+                        handleErrorStatus(response.status)
                         return response.json();
                     })
                     .then(() => location.reload())
@@ -127,9 +118,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     body: JSON.stringify({"id": id})
             })
             .then(response => {
-                if (response.status === 401) {
-                    handleTokenExpiration();
-                }
+                handleErrorStatus(response.status);
                 return response.json();
             })
             .then(() => location.reload())
@@ -149,12 +138,32 @@ document.addEventListener("DOMContentLoaded", () => {
             button.classList.remove("disabled");
         });
     }
-    function handleTokenExpiration() {
-        localStorage.removeItem("authToken");
-        localStorage.removeItem("tokenExpiration");
 
-        alert("Tu sesion ha expirado. Por favor, inicia sesion nuevamente.");
-        window.location.href = "/users/login";
+    function handleErrorStatus(status) 
+    {
+        msg = ""
+        if (status === 400) {
+            msg += "Peticion invalida";
+        }
+        else if (status === 401) {
+            msg += "Error en los campos de la peticion";
+        } else if (status === 403) {
+            localStorage.removeItem("authToken");
+            localStorage.removeItem("tokenExpiration");
+
+            alert("Tu sesion ha expirado. Por favor, inicia sesion nuevamente.");
+            window.location.href = "/users/login";
+            return;
+        } else if (status === 404 ) {
+            msg += "Recurso no encontrado";
+        } else if (status === 409) {
+            msg += "Conflicto con la solicitud";
+        } else if (status === 500) {
+            msg += "Error con el servidor";
+        }
+        if (msg != "" ){
+            alert(msg + ". Consulte la consola para mayor informacion.")
+        }
     }
 
 });

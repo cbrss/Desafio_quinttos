@@ -6,9 +6,7 @@ require_once 'app/config/DBConfig.php';
 require_once 'app/views/taskView.php';
 require_once 'app/utils/ResponseHttp.php';
 
-
 $token = $_COOKIE['authToken'] ?? null;
-
 if (!$token) {
     $headers = getallheaders();
     $authHeader = isset($headers['Authorization']) ? $headers['Authorization'] : "";
@@ -17,17 +15,16 @@ if (!$token) {
         $token = $matches[1];
     }
 }
-
 if (!$token) {
     ResponseHttp::status401("Unauthorized token");
     return;
 }
-
 $payload = JWTHandler::decode($token);
 if (!$payload) {
     ResponseHttp::status403("Invalid token");
     return;
 }
+
 $DB_HOST = DBConfig::getHost();
 $DB_NAME = DBConfig::getName();
 $DB_USER = DBConfig::getUser();

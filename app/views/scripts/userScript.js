@@ -49,7 +49,11 @@ document.addEventListener("DOMContentLoaded", () => {
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(data) 
         })
-        .then(response => response.json())
+        .then(response => {
+            handleErrorStatus(response.status);
+            return response.json();
+
+        })
         .then(result => {
             if (result.success) {
                 if (formType == 'register') {
@@ -59,12 +63,35 @@ document.addEventListener("DOMContentLoaded", () => {
                     localStorage.setItem("authToken", result.token);
                     window.location.href = "/tasks/list";
                 }
-            } else {
-                alert("Error: " + result.message); 
             }
         })
         .catch(error => console.error("Fetch error:", error));
-        
     }
 
+    function handleErrorStatus(status) 
+    {
+        msg = ""
+        if (status === 400) {
+            msg += "Peticion invalida";
+        }
+        else if (status === 401) {
+            msg += "Usuario invalido.";
+        } else if (status === 403) {
+            localStorage.removeItem("authToken");
+            localStorage.removeItem("tokenExpiration");
+
+            alert("Tu sesion ha expirado. Por favor, inicia sesion nuevamente.");
+            window.location.href = "/users/login";
+            return;
+        } else if (status === 404 ) {
+            msg += "Recurso no encontrado";
+        } else if (status === 409) {
+            msg += "Conflicto con la solicitud";
+        } else if (status === 500) {
+            msg += "Error con el servidor";
+        }
+        if (msg != "" ){
+            alert(msg)
+        }
+    }
 });
